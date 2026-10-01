@@ -1,41 +1,67 @@
 ---
 name: ponytail-audit
 description: >
-  Whole-repo audit for over-engineering. Like ponytail-review, but scans the
-  entire codebase instead of a diff: a ranked list of what to delete, simplify,
-  or replace with stdlib/native equivalents. Use when the user says "audit this
-  codebase", "audit for over-engineering", "what can I delete from this repo",
-  "find bloat", "ponytail-audit", or "/ponytail-audit". One-shot report, does
-  not apply fixes.
+  Whole-repo audit for unnecessary complexity: a ranked report of supported
+  simplifications and candidates needing investigation. Use for "audit for
+  over-engineering", "what can I delete from this repo", "find bloat", or
+  /ponytail-audit. One-shot report; does not apply fixes.
 ---
 
-ponytail-review, repo-wide. Scan the whole tree instead of a diff. Rank
-findings biggest cut first.
+Review the repository for unnecessary complexity, not just a diff. Look for
+unused flexibility, speculative layers, duplicated responsibilities, and
+custom code or dependencies that a suitable existing facility can replace.
+Files exporting one thing or interfaces with one implementation are not
+inherently unnecessary: external I/O boundaries, centralized business rules,
+test seams, and reduced coupling can justify them now. Do not introduce new
+layers merely for imagined future use or to make files short.
 
-## Tags
+## Findings
 
-Same as ponytail-review:
+Use tags `delete`, `stdlib`, `native`, `yagni`, or `simplify`. For each
+significant suggestion state the location, proposed change, current
+complexity reduced, why the removal is justified or replacement sufficient,
+behavior to preserve, and evidence or a specific check still needed.
+Separate `supported` findings from `candidate` proposals needing investigation;
+uncertainty does not authorize deletion. Rank by maintenance benefit,
+confidence, and risk, not the biggest cut. Line/dependency counts are optional
+supporting detail; do not invent precise savings.
 
-- `delete:` dead code, unused flexibility, speculative feature. Replacement: nothing.
-- `stdlib:` hand-rolled thing the standard library ships. Name the function.
-- `native:` dependency or code doing what the platform already does. Name the feature.
-- `yagni:` abstraction with one implementation, config nobody sets, layer with one caller.
-- `shrink:` same logic, fewer lines. Show the shorter form.
+## Checks on your suggestions
 
-## Hunt
+Inspect relevant callers and contracts before recommending a shared change;
+different callers may need different validation. Verify relevant inputs,
+edge cases, errors, returns, side effects, public contracts, security, data
+integrity, accessibility, and required performance. Scale checks to the risk.
+A replacement must meet the requirement; do not silently narrow requested scope.
 
-Deps the stdlib or platform already ships, single-implementation interfaces,
-factories with one product, wrappers that only delegate, files exporting one
-thing, dead flags and config, hand-rolled stdlib.
+Preserve descriptive names, clear multiline logic, useful helpers, and
+comments explaining why or an external constraint. Splitting distinct current
+responsibilities is legitimate; fewer files or lines are not success criteria.
 
-## Output
+Use the existing test framework and practices. Necessary tests and fixtures
+are not over-engineering. Preserve behavior cases, meaningful assertions,
+names, and failure localization when combining or parameterizing tests.
+Removing a test needs evidence of duplicate coverage or a changed requirement,
+not a shorter implementation. Suggest focused regression tests for bug fixes
+when feasible. Checks follow behavior and risk, including one-line changes;
+no artificial test-count cap or heavy suite for every trivial edit.
 
-One line per finding, ranked: `<tag> <what to cut>. <replacement>. [path]`.
-End with `net: -<N> lines, -<M> deps possible.` Nothing to cut: `Lean already. Ship.`
+For database, network, collection, concurrency, or large-data changes, inspect
+work and external-call growth. Preserve batching, needed pagination,
+concurrency limits, and existing safeguards. Do not substitute N+1 queries or
+worse time complexity for brevity. Name size assumptions for bounded-data
+shortcuts. Use inspection, a query-count test, or measurement as appropriate;
+not a benchmark for every suggestion.
+
+Preserve necessary explanations, assumptions, checks, and material unchecked
+risks. A `ponytail:` marker must name a concrete ceiling and trigger to revisit;
+it cannot excuse violating requirements. An empty marker ledger does not
+prove absence of debt.
 
 ## Boundaries
 
-Scope: over-engineering and complexity only. Correctness bugs, security holes,
-and performance are explicitly out of scope. Route them to a normal review
-pass. Lists findings, applies nothing. One-shot.
-"stop ponytail-audit" or "normal mode" to revert.
+Report only; apply nothing. One-shot complexity audit, not a comprehensive
+correctness review, but the correctness, safety, and performance consequences
+of its own proposals are in scope. No justified changes: say "No supported
+simplifications found" and report material candidates or unchecked areas;
+this is not a general safety approval. "stop ponytail-audit" / "normal mode": revert.

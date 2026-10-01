@@ -1,5 +1,7 @@
 # CSV Sum
 
+> Historical benchmark output, preserved verbatim below; not current implementation guidance. The recorded size difference does not show equivalence for malformed rows, missing values, numeric precision, or large files. Preserve the data-handling contract.
+
 **Task:** "Write Python code that reads sales.csv and sums the 'amount' column."
 
 Verbatim model output from a benchmark run, Claude Haiku 4.5, no-skill arm vs ponytail arm, temperature 1, source `benchmarks/output.json`. Reproduce: `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`.

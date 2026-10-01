@@ -24,8 +24,8 @@ const copy = JSON.parse(JSON.stringify(original));
 ## With Ponytail
 
 ```js
-// ponytail: structuredClone does this
+// Suitable when the object contains only supported cloneable values.
 const copy = structuredClone(original);
 ```
 
-**1 dependency (or a fragile hack) → 1 built-in.** `structuredClone` handles `Date`, `Map`, `Set`, `ArrayBuffer`, `RegExp`, circular references, and more, everything `JSON.parse/stringify` silently drops. Available in every browser since 2022 and Node.js since v17. Pull lodash in when you need the rest of it, not for one function.
+`structuredClone` is a candidate for supported cloneable data, not a general drop-in for every deep-clone utility. Check unsupported values, prototypes, error behavior, and target support against callers. Keep the existing helper or dependency if those differences matter.

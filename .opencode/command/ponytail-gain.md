@@ -1,5 +1,47 @@
 ---
-description: Show ponytail's measured impact scoreboard (less code, cost, time)
+description: Show historical benchmark measurements and their limits
 ---
 
-Show the ponytail gain scoreboard. One shot, change nothing: do not switch mode, write flag files, or persist anything. Render the published benchmark medians (5 everyday tasks; models Haiku, Sonnet, Opus; source benchmarks/ and the README) as plain ASCII bars: Lines of code, no-skill 100% vs ponytail 6-20% (down 80-94%); Cost, no-skill 100% vs ponytail 23-53% (down 47-77%); Speed, ponytail 3-6x faster. The bar length shows the measured range, the label carries the exact figure. These are benchmark medians, not this repo. NEVER print a per-repo savings number: the unbuilt version was never written, so there is no real baseline to subtract from in a live repo. For real per-repo figures, point to /ponytail-debt (the counted shortcut ledger) and /ponytail-audit (what is still cuttable). Report only.
+# Ponytail Gain
+
+Display this scoreboard when invoked. One-shot: do NOT change mode, write flag
+files, or persist anything.
+
+The figures are the published benchmark medians (5 everyday tasks: email
+validator, debounce, CSV sum, countdown timer, rate limiter; three models:
+Haiku, Sonnet, Opus). They are measured, not computed from the current repo.
+Source: `benchmarks/` and the README.
+
+## Scoreboard
+
+Render plain ASCII bars. The bar length shows the measured range; the label
+carries the exact figure:
+
+```
+  ponytail gain                     benchmark median · 5 tasks · 3 models
+
+  Lines of code   no-skill  ████████████████████  100%
+                  ponytail  ██▌·················    6–20%   ▼ 80–94%
+  Cost            no-skill  ████████████████████  100%
+                  ponytail  █████▌··············   23–53%  ▼ 47–77%
+  Speed           ponytail  ▸ 3–6× faster
+
+  This repo:  /ponytail-debt  (shortcuts you deferred)
+              /ponytail-audit (what's still cuttable)
+```
+
+## Honesty boundary
+
+These are historical single-shot benchmark medians, not this repo or a
+measurement of the current rules. Display this qualification with the card.
+They do not measure general safety, maintainability, performance at scale, or
+the effect of the revised safeguards. Fewer lines are not a quality score. NEVER print a per-repo savings
+number ("you saved X lines/tokens here"): the unbuilt version was never
+written, so there is no real baseline to subtract from in a live repo. The
+only real per-repo figures come from `/ponytail-debt` (a counted ledger), and
+this card points there instead of inventing one.
+
+## Boundaries
+
+One-shot display. Edits nothing, changes no mode.
+"stop ponytail" or "normal mode": revert.

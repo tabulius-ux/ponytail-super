@@ -20,3 +20,18 @@ test("buildInstructions returns the ruleset tagged with the resolved mode", () =
   assert.match(text, /PONYTAIL MODE ACTIVE/);
   assert.match(text, /ultra/);
 });
+
+for (const mode of MODES) {
+  test(`${mode} MCP instructions match the shared builder with safeguards intact`, async () => {
+    const { createRequire } = await import('node:module');
+    const require = createRequire(import.meta.url);
+    const { getPonytailInstructions } = require('../../hooks/ponytail-instructions.js');
+    const text = buildInstructions(mode);
+    assert.equal(text, getPonytailInstructions(mode));
+    assert.match(text, /existing test framework/);
+    assert.match(text, /N\+1/);
+    assert.match(text, /one implementation or caller/);
+    assert.match(text, /clear multiline logic/);
+    assert.match(text, /All active modes keep the same behavior/);
+  });
+}

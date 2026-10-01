@@ -35,7 +35,10 @@ carries the exact figure:
 
 ## Honesty boundary
 
-These are benchmark medians, not this repo. NEVER print a per-repo savings
+These are historical single-shot benchmark medians, not this repo or a
+measurement of the current rules. Display this qualification with the card.
+They do not measure general safety, maintainability, performance at scale, or
+the effect of the revised safeguards. Fewer lines are not a quality score. NEVER print a per-repo savings
 number ("you saved X lines/tokens here"): the unbuilt version was never
 written, so there is no real baseline to subtract from in a live repo. The
 only real per-repo figures come from `/ponytail-debt` (a counted ledger), and

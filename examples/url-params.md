@@ -24,7 +24,7 @@ const url = qs.stringify({ page: 2, sort: "name", tags: ["js", "css"] });
 ## With Ponytail
 
 ```js
-// ponytail: URLSearchParams does this
+// Suitable for this query contract: strings and repeated keys.
 const params = new URLSearchParams(location.search);
 
 // Read
@@ -38,4 +38,4 @@ out.append("tags", "css");
 out.toString(); // "page=2&sort=name&tags=js&tags=css"
 ```
 
-**1 dependency → 0 dependencies.** `URLSearchParams` is in every browser and in Node.js since v10. It handles encoding, repeated keys, and iteration. The package was a polyfill for an API that has shipped everywhere for years.
+`URLSearchParams` can cover this strings-and-repeated-keys contract. Before replacing an existing parser, verify array/null handling, encoding, ordering, return types, and caller expectations. A query-string package may serve behavior beyond the native API.

@@ -8,7 +8,7 @@
 <h1 align="center">Ponytail</h1>
 
 <p align="center">
-  <em>He says nothing. He writes one line. It works.</em>
+  <em>Less unnecessary code. Clear responsibilities. Required behavior preserved.</em>
 </p>
 
 <p align="center">
@@ -30,8 +30,8 @@
 </p>
 
 <p align="center">
-  <strong>~54% less code (up to 94%) &middot; ~20% cheaper &middot; ~27% faster &middot; 100% safe</strong><br>
-  <sub>Measured on real Claude Code sessions editing a real open-source repo (FastAPI + React), against the same agent with no skill. ~54% is the mean across 12 feature tasks (Haiku 4.5, n=4); it reaches 94% where an agent over-builds (a date picker) and is near zero where the code is already minimal. ponytail keeps every safety guard while a bare "write one-liners" prompt drops one. (The earlier single-shot benchmark reported 80-94% as a flat figure; against a fair agentic baseline that is the per-task ceiling, not the average.) <a href="benchmarks/results/2026-06-18-agentic.md">Full writeup</a> &middot; <a href="benchmarks/">reproduce it</a>.</sub>
+  <strong>~54% less code (up to 94%) &middot; ~20% cheaper &middot; ~27% faster &middot; historical benchmark</strong><br>
+  <sub>Measured on real Claude Code sessions editing a real open-source repo (FastAPI + React), against the same agent with no skill. ~54% is the mean across 12 feature tasks (Haiku 4.5, n=4); it reaches 94% where an agent over-builds (a date picker) and is near zero where the code is already minimal. In the separate adversarial test set, ponytail passed 20/20 cases and the bare "write one-liners" prompt passed 19/20. This is not a general safety guarantee. (The earlier single-shot benchmark reported 80-94% as a flat figure; against a fair agentic baseline that is the per-task ceiling, not the average.) <a href="benchmarks/results/2026-06-18-agentic.md">Full writeup</a> &middot; <a href="benchmarks/">reproduce it</a>.</sub>
 </p>
 
 <p align="center">
@@ -55,22 +55,22 @@
 
 ---
 
-You know him. Long ponytail. Oval glasses. Has been at the company longer than the version control. You show him fifty lines; he looks at them, says nothing, and replaces them with one.
+You know him. Long ponytail. Oval glasses. Has been at the company longer than the version control. He asks what the code needs to do, then removes complexity that serves no current purpose.
 
 Ponytail puts him inside your AI agent.
 
 ## Before / after
 
-You ask for a date picker. Your agent installs flatpickr, writes a wrapper component, adds a stylesheet, and starts a discussion about timezones.
+You need a basic date input. Before adding a picker library, check whether the browser control meets the actual requirements and target-platform support.
 
 With ponytail:
 
 ```html
-<!-- ponytail: browser has one -->
-<input type="date">
+<label for="date">Date</label>
+<input id="date" type="date">
 ```
 
-More survivors in [examples/](examples/).
+Use the native control only if it covers the required interaction, formatting, and accessibility. Retain an existing component when it serves those needs. See [examples/](examples/) for scoped illustrations and historical outputs.
 
 ## Numbers
 
@@ -80,13 +80,13 @@ The honest measurement is a real agent doing real work: a headless Claude Code s
   <img src="assets/benchmark-agentic.svg" width="860" alt="Each arm as a percent of the no-skill baseline across LOC, tokens, cost and time (Haiku 4.5). ponytail is lowest on every metric (LOC 46%, tokens 78%, cost 80%, time 73%); caveman rises above 100% on tokens, cost and time; yagni-oneliner LOC 67%. Safety, separate adversarial tier: baseline, caveman and ponytail 100%, yagni-oneliner 95%.">
 </p>
 
-| vs no-skill baseline | LOC | tokens | cost | time | safe |
+| vs no-skill baseline | LOC | tokens | cost | time | adversarial cases passed |
 |---|--:|--:|--:|--:|--:|
 | **ponytail** | **-54%** | **-22%** | **-20%** | **-27%** | **100%** |
 | caveman (terse-prose control) | -20% | +7% | +3% | +2% | 100% |
 | "YAGNI + one-liners" prompt | -33% | -14% | -21% | -30% | 95% |
 
-ponytail is the only arm that cuts every metric, and the only one that stays fully safe while doing it. The cut is biggest where there is a real over-build trap (date picker 404 to 23 lines, color picker 287 to 23, because it reaches for a native `<input>` instead of a component) and near zero on code that is already minimal. Full method, per-task tables, and limitations: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
+In this experiment, ponytail reduced all four reported resource metrics and passed the separate adversarial set (20/20). That set does not establish general security, readability, test adequacy, maintainability, or performance at scale. These historical results predate the revised safeguards below; their effect has not been measured in a new model comparison. The cut is biggest where there is a real over-build trap (date picker 404 to 23 lines, color picker 287 to 23, because it reaches for a native `<input>` instead of a component) and near zero on code that is already minimal. Full method, per-task tables, and limitations: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
 
 <details>
 <summary><strong>Older single-shot numbers (isolated generation)</strong></summary>
@@ -101,11 +101,11 @@ This showed **80-94% less code**. [#126](https://github.com/DietrichGebert/ponyt
 
 </details>
 
-**The rule was never "fewest tokens."** It is: write only what the task needs, and never cut validation, error handling, security, or accessibility. The code ends up small because it is necessary, not golfed. Lower cost and latency are a side effect on the models that follow the ladder; a terse reasoning model that spends thinking tokens deliberating the rungs can go the other way (on GPT-5.5 it does).
+**The goal is understandable code that meets requirements and stays easy to change.** Code, file, and token counts are secondary. Preserve needed behavior, tests, validation, error handling, security, accessibility, and performance. The revised rules remove conflicting incentives to shorten code; this is a design rationale, not a measured quality improvement. Lower cost and latency are a side effect on the models that follow the ladder; a terse reasoning model that spends thinking tokens deliberating the rungs can go the other way (on GPT-5.5 it does).
 
 ## How it works
 
-Before writing code, the agent stops at the first rung that holds:
+Before writing code, the agent stops at the first rung that meets the relevant requirements and fits the project's practices:
 
 ```
 1. Does this need to exist?   → no: skip it (YAGNI)
@@ -113,13 +113,21 @@ Before writing code, the agent stops at the first rung that holds:
 3. Stdlib does it?            → use it
 4. Native platform feature?   → use it
 5. Installed dependency?      → use it
-6. One line?                  → one line
-7. Only then: the minimum that works
+6. Only then: clear, conventional code for the remaining need
 ```
 
 The ladder runs *after* it understands the problem, not instead of it: it reads the code the change touches and traces the real flow before picking a rung. Lazy about the solution, never about reading.
 
-Lazy, not negligent: trust-boundary validation, data-loss handling, security, and accessibility are never on the chopping block.
+The same safeguards apply in **lite**, **full**, and **ultra**:
+
+- Keep descriptive names, clear multiline logic, useful helpers, and current responsibility boundaries. Split a file when that clarifies its existing responsibilities; do not add speculative layers or optimize file counts.
+- Use the existing test framework and preserve behavior cases, assertions, names, and failure localization. Test by behavior and risk, including one-line changes. A shorter implementation does not justify deleting tests.
+- Inspect work and external-call growth when changing database, network, collection, concurrency, or large-data code. Preserve batching, pagination, concurrency limits, and required complexity; preventing N+1 is not automatically premature optimization.
+- Judge abstractions by current purpose. One implementation can still isolate I/O, centralize a rule, or support testing. Check callers and their contracts before a shared change.
+- Verify a replacement's relevant behavior, errors, public contracts, data integrity, security, accessibility, and performance. Simplify implementation without silently narrowing the request.
+- Keep explanations of constraints, assumptions, tradeoffs, checks, and important gaps. A `ponytail:` marker names a concrete ceiling and revisit trigger; it cannot excuse unmet requirements.
+
+Lite suggests suitable alternatives; full applies the ladder; ultra challenges speculative scope more strongly. None relaxes these safeguards. Review and audit report evidence-backed simplifications separately from candidates needing investigation, assess their own proposals' consequences, and apply no fixes automatically.
 
 ## Install
 
@@ -331,7 +339,7 @@ These remove the plugin's own files. They leave behind a small amount of state p
 | Command | What it does |
 |---------|--------------|
 | `/ponytail [lite \| full \| ultra \| off]` | Set the intensity, or turn it off. No argument reports the current level. |
-| `/ponytail-review` | Review the current diff for over-engineering, hands back a delete-list. |
+| `/ponytail-review` | Review the current diff for justified simplifications and candidates; report only. |
 | `/ponytail-audit` | Audit the whole repo for over-engineering, not just the diff. |
 | `/ponytail-debt` | Harvest the `ponytail:` shortcuts you've deferred into a ledger, so "later" doesn't become "never". |
 | `/ponytail-gain` | Show the measured impact scoreboard (less code, less cost, more speed) from the benchmark. |
@@ -341,7 +349,7 @@ Commands need a skill-capable host (Claude Code, Codex, Devin CLI, OpenCode, Gem
 
 ## Development
 
-When changing the compact rule text, keep the agent copies aligned:
+Instruction sources, hand-maintained copies, and runtime fallbacks are mapped in [Agent portability](docs/agent-portability.md#instruction-sources-and-copies). Keep them aligned when changing behavior:
 
 ```bash
 node scripts/check-rule-copies.js
@@ -355,16 +363,16 @@ The correctness benchmark spawns Python for email and CSV checks; `python3` is t
 ## FAQ
 
 **Can I use it with [caveman](https://github.com/JuliusBrussee/caveman)?**
-Yes, and you should. Caveman shrinks what the agent says; ponytail shrinks what it builds. Different halves, no overlap: caveman leaves code byte-for-byte exact, ponytail stays out of the prose. Terse talk about minimal code.
+Yes, and you should. Caveman shrinks what the agent says; ponytail shrinks what it builds. Different halves, no overlap: caveman leaves code byte-for-byte exact, ponytail stays out of the prose. Keep necessary rationale, assumptions, checks, and verification gaps regardless of prose style.
 
 **Does it need a config file?**
 No. An optional `~/.config/ponytail/config.json` or `PONYTAIL_DEFAULT_MODE` env var can set the default level, but nothing is required.
 
 **What if I really need the 120-line cache class?**
-You don't. Insist anyway and he'll build it. Slowly. Correctly. While looking at you.
+Build what the requirements justify. A cache must preserve required expiry, invalidation, error handling, and caller expectations; a shorter cache without those properties is not a substitute.
 
 **Does it scale?**
-The code you never wrote scales infinitely. Zero bugs, zero CVEs, 100% uptime since forever.
+Inspect how work and external calls grow with input size. Simplicity is not a scalability or safety guarantee; preserve current safeguards and measure where the change warrants it.
 
 **Why "ponytail"?**
 You know exactly why.

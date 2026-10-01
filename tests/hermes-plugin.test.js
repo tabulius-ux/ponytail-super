@@ -161,7 +161,10 @@ print(json.dumps({'ctx': ctx}))
   const { ctx } = JSON.parse(output);
   assert.match(ctx, /PONYTAIL MODE ACTIVE — level: review/);
   assert.match(ctx, /Review diffs for unnecessary complexity/);
-  assert.match(ctx, /net: -<N> lines possible/);
+  assert.match(ctx, /Report only; do not apply fixes/);
+  assert.match(ctx, /supporting evidence or a specific check still needed/);
+  assert.match(ctx, /correctness, security/);
+  assert.match(ctx, /performance/);
   assert.doesNotMatch(ctx, /^---/);
 });
 
@@ -233,4 +236,42 @@ print(json.dumps(cases, sort_keys=True))
   assert.match(data['/ponytail-help'].text, /ponytail-help/);
   assert.equal(data['/status'], null);
   assert.equal(data.hello, null);
+});
+
+test('Hermes matches shared instructions and fallbacks in every active mode', (t) => {
+  const output = python(String.raw`
+import importlib.util, json, pathlib, tempfile
+spec = importlib.util.spec_from_file_location('ponytail_hermes_plugin', '__init__.py')
+mod = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(mod)
+modes = ['lite', 'full', 'ultra', 'review']
+normal = {mode: mod.build_injected_context(mode) for mode in modes}
+with tempfile.TemporaryDirectory() as tmp:
+    mod.PONYTAIL_SKILL = pathlib.Path(tmp) / 'missing-core.md'
+    mod.REVIEW_SKILL = pathlib.Path(tmp) / 'missing-review.md'
+    fallback = {mode: mod.build_injected_context(mode) for mode in modes}
+print(json.dumps({'normal': normal, 'fallback': fallback}))
+`);
+  const contexts = JSON.parse(output);
+  const { getPonytailInstructions, getFallbackInstructions } = require('../hooks/ponytail-instructions');
+  for (const mode of ['lite', 'full', 'ultra', 'review']) {
+    assert.equal(contexts.normal[mode].trim(), getPonytailInstructions(mode).trim(), `${mode}: skill route`);
+    if (mode !== 'review') {
+      assert.equal(contexts.fallback[mode].trim(), getFallbackInstructions(mode).trim(), `${mode}: fallback route`);
+    } else {
+      assert.match(contexts.fallback[mode], /Report only; do not apply fixes/);
+      assert.match(contexts.fallback[mode], /Uncertainty\s+is not permission to delete/);
+      assert.match(contexts.fallback[mode], /meaningful assertions/);
+      assert.match(contexts.fallback[mode], /N\+1/);
+      assert.match(contexts.fallback[mode], /even with one implementation/);
+    }
+  }
+  const originalRead = fs.readFileSync;
+  t.mock.method(fs, 'readFileSync', (file, ...args) => {
+    if (file === path.join(root, 'skills', 'ponytail-review', 'SKILL.md')) {
+      throw Object.assign(new Error('missing review'), { code: 'ENOENT' });
+    }
+    return originalRead(file, ...args);
+  });
+  assert.equal(contexts.fallback.review.trim(), getPonytailInstructions('review').trim());
 });

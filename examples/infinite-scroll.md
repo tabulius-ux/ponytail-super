@@ -27,12 +27,12 @@ export function Feed({ items, fetchMore, hasMore }) {
 }
 ```
 
-A dependency to watch scroll position and fire a callback.
+A scroll component may also supply loading, end-of-list, error, and concurrency behavior. Preserve those responsibilities when replacing it.
 
-## With Ponytail
+## Native primitive (partial illustration)
 
 ```jsx
-// ponytail: IntersectionObserver does this, no scroll listener needed
+// Visibility detection only; fetchMore must preserve request safeguards.
 import { useEffect, useRef } from "react";
 
 export function Feed({ items, fetchMore, hasMore }) {
@@ -55,4 +55,4 @@ export function Feed({ items, fetchMore, hasMore }) {
 }
 ```
 
-**1 dependency → 0 dependencies.** `IntersectionObserver` fires only when the sentinel enters the viewport, no scroll event, no throttling, no jank. Ships in every browser. The library wraps exactly this API.
+This partial snippet only demonstrates visibility detection; it is not an equivalent replacement for the component above. Before using it, retain loading/end/error states, pagination and request deduplication or concurrency limits, keyboard-accessible loading controls, and cleanup. Specify what happens when the sentinel remains visible after a page arrives. Keep the existing component if it already covers those requirements; a shorter observer callback is not enough.

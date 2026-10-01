@@ -2,7 +2,7 @@
 
 The lazy senior dev's first question is always: *does the platform already do this?*
 
-This document answers that question for the most common cases. Before reaching for a package, scan here. The platform ships with your app for free, doesn't break on updates, and was written by people whose job is exactly that problem.
+These are candidates for reuse, not drop-in equivalence claims. Before replacing a package, check the required inputs, errors, return values, side effects, public contracts, target support, accessibility, and performance. Native features can change too. Keep a suitable existing dependency when it serves a current need.
 
 ---
 
@@ -20,8 +20,8 @@ Things the browser already has as a form control.
 | Meter/gauge component | `<meter value="0.7">` |
 | Modal/dialog library | `<dialog>` + `dialog.showModal()` |
 | Accordion/FAQ component | `<details><summary>Title</summary>…</details>` |
-| Tooltip library | `title` attribute + CSS `::before`/`::after` |
-| Searchable dropdown | `<input list="id"> <datalist id="id">` |
+| Basic advisory text | `title` is not a substitute for an accessible interactive tooltip |
+| Basic input suggestions | `<input list="id"> <datalist id="id">`, if required interaction and accessibility are covered |
 | Auto-growing textarea | `field-sizing: content` (CSS) |
 | Sticky header | `position: sticky; top: 0` (CSS) |
 
@@ -60,7 +60,7 @@ Libraries people install that the runtime already ships.
 | `query-string` / `qs` | `new URLSearchParams(location.search)` |
 | `lodash.clonedeep` | `structuredClone(obj)` |
 | `lodash.groupby` | `Object.groupBy(arr, fn)` |
-| `lodash.debounce` | see debounce one-liner below |
+| Simple trailing debounce | A per-instance timer, if cancellation/flush and other library behavior are not needed |
 | `numeral` / `accounting` | `new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })` |
 | `date-fns` format | `new Intl.DateTimeFormat("en-US", { dateStyle: "long" }).format(date)` |
 | `date-fns` relative time | `new Intl.RelativeTimeFormat("en", { numeric: "auto" }).format(-3, "day")` |
@@ -70,19 +70,17 @@ Libraries people install that the runtime already ships.
 | Infinite scroll library | `new IntersectionObserver(cb).observe(sentinel)` |
 | Resize listener library | `new ResizeObserver(cb).observe(element)` |
 | DOM mutation watcher | `new MutationObserver(cb).observe(el, options)` |
-| `uuid-validate` | `/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)` |
-| `is-online` / `connectivity check` | `navigator.onLine` + `online`/`offline` events |
+| UUID v4 syntax only | `/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)` |
+| Network-status hint | `navigator.onLine` is a hint, not proof a remote service is reachable |
 | `sharesheet` library | `navigator.share({ title, text, url })` |
-| `store.js` / `localForage` (simple case) | `localStorage.setItem(key, JSON.stringify(val))` |
+| Small synchronous string storage | `localStorage.setItem(key, JSON.stringify(val))`; not a drop-in for async storage or large data |
 | Abort fetch on timeout | `AbortSignal.timeout(5000)` passed to `fetch` |
 | Custom event bus | `new EventTarget()` / `dispatchEvent(new CustomEvent("x", { detail }))` |
 
-**Debounce one-liner** (no library):
-```js
-// ponytail: 3 lines beats a dependency
-let t;
-const debounce = (fn, ms) => (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
-```
+A debounce replacement needs an independent timer per wrapped function and
+must preserve the required receiver and timing behavior. Retain an existing
+utility if callers use its cancellation, flush, or leading-edge semantics;
+a shorter shared-timer expression changes behavior.
 
 ---
 
@@ -97,7 +95,7 @@ UI components people reach for a library or a custom view for.
 | Search bar + filtering | `.searchable(text:)` |
 | Pull-to-refresh library | `.refreshable { }` |
 | Swipe-to-delete / row actions | `.swipeActions { }` |
-| Async image loading + cache | `AsyncImage` |
+| Basic async image display | `AsyncImage`; verify required caching behavior separately |
 | Charting library | Swift Charts (`import Charts`) |
 | Markdown rendering | `Text(...)` markdown / `AttributedString(markdown:)` |
 | Share sheet wrapper | `ShareLink` |
@@ -115,7 +113,7 @@ Frameworks and stdlib that wrappers wrap.
 | Date/number/currency formatting | `.formatted()` / `FormatStyle` |
 | Regex library | Swift regex literals + `Regex` |
 | Crypto library (CryptoSwift) | `CryptoKit` |
-| Keychain wrapper | Security `SecItem`; a few lines, not a dependency |
+| Keychain access | Security `SecItem`, if required error and access-control handling remain clear |
 | Persistence / ORM | `SwiftData`, or `@AppStorage` for small key-values |
 | Logging library | `Logger` (`os.log`) |
 | UUID / Base64 helpers | `UUID()`, `Data(...).base64EncodedString()` |
@@ -133,18 +131,18 @@ Packages that wrap Node built-ins.
 | `mkdirp` | `fs.mkdirSync(path, { recursive: true })` |
 | `rimraf` | `fs.rmSync(path, { recursive: true, force: true })` |
 | `make-dir` | `fs.mkdirSync(path, { recursive: true })` |
-| `slash` (win paths) | `path.posix` or `path.normalize()` |
+| Path manipulation | `path` APIs; normalization and conversion of separators have different contracts |
 | `uuid` (v4) | `crypto.randomUUID()` |
 | `ms` (parse duration strings) | keep `ms`, it's genuinely useful and tiny |
-| `is-stream` | `val instanceof stream.Readable` |
+| Readable-stream check | `val instanceof stream.Readable` only for that class, not a generic stream predicate |
 | `object-assign` | `Object.assign()` / spread |
 | `array-uniq` | `[...new Set(arr)]` |
 | `array-flatten` | `arr.flat(Infinity)` |
-| `flat` | `arr.flat(depth)` |
+| Flatten arrays | `arr.flat(depth)`; not a replacement for object-key flattening |
 | `path-exists` | `fs.existsSync(path)` |
 | `load-json-file` | `JSON.parse(fs.readFileSync(path, "utf8"))` |
 | `write-json-file` | `fs.writeFileSync(path, JSON.stringify(obj, null, 2))` |
-| `pkg-dir` | `path.resolve(__dirname, "..")` / `import.meta.dirname` |
+| Known relative directory | `path.resolve(__dirname, "..")`; not package-root discovery |
 
 ---
 
@@ -160,11 +158,11 @@ Packages that wrap what Python already ships.
 | `six` | drop it, Python 2 is gone |
 | `pathlib2` | `pathlib.Path` (built-in since Python 3.4) |
 | `enum34` | `enum.Enum` (built-in since Python 3.4) |
-| `typing_extensions` (common types) | `from __future__ import annotations` + built-in generics |
+| Type backports | Remove only types supplied by every supported Python version; deferred annotations do not supply missing types |
 | `simplejson` (basic use) | `json` (stdlib) |
 | `requests` (simple GET) | `urllib.request.urlopen(url)`, `requests` for anything real |
 | `click` (single command) | `argparse` (stdlib) |
-| `mergedeep` | `dict \| other_dict` (Python 3.9+) |
+| Shallow dict merge | `dict \| other_dict` (Python 3.9+); does not replace recursive merging |
 | `more-itertools` (basic) | `itertools` (stdlib): `chain`, `islice`, `groupby`, `product` |
 | `toolz` (basic) | `functools`: `lru_cache`, `partial`, `reduce` |
 | `tabulate` (dev/debug only) | `pprint.pprint()` for quick inspection |
@@ -182,15 +180,15 @@ Things the application layer implements that the database already does.
 | Rank within group | `RANK() OVER (PARTITION BY category ORDER BY score DESC)` |
 | Pivot / cross-tab | `FILTER (WHERE ...)` + conditional aggregation |
 | Deduplication | `SELECT DISTINCT` / `ON CONFLICT DO NOTHING` |
-| Soft-delete filtering | Generated column + partial index |
+| Soft-delete filtering | A query predicate or scoped view; an index alone does not enforce filtering |
 | Tree traversal | Recursive CTE (`WITH RECURSIVE`) |
 | Full-text search (basic) | `tsvector` / `MATCH AGAINST` / `FTS5` |
 | JSON storage + query | `jsonb` (Postgres) / `JSON_EXTRACT` (SQLite/MySQL) |
 | UUID generation | `gen_random_uuid()` (Postgres) / `UUID()` (MySQL) |
 | Timestamps on insert/update | `DEFAULT now()` + trigger or `ON UPDATE CURRENT_TIMESTAMP` |
-| Enforce uniqueness | `UNIQUE` constraint, not application-level checks |
-| Enforce referential integrity | `FOREIGN KEY`, not application-level checks |
-| Enforce value ranges | `CHECK (price > 0)`, not application-level validation |
+| Enforce uniqueness | `UNIQUE` constraint; preserve application error mapping |
+| Enforce referential integrity | `FOREIGN KEY`; preserve caller validation contracts |
+| Enforce value ranges | `CHECK (price > 0)`; retain required application validation and error reporting |
 
 ---
 
@@ -206,6 +204,6 @@ The wrapper goes unmaintained.
 You debug the wrapper.
 ```
 
-Skip the wrapper. The platform ships with your app for free.
+Skip a wrapper only when it adds no current value. Preserve useful boundaries and verify the replacement covers the contract.
 
 When the native solution is genuinely insufficient (old browser support, edge cases it doesn't handle, ergonomics that matter at scale), the library earns its place. Install it then, not before.

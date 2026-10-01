@@ -1,10 +1,12 @@
 # Examples
 
-Real model output, verbatim from benchmark runs, the same task answered by the same model
+The five examples in the table are historical model output, verbatim from benchmark runs, the same task answered by the same model
 with no skill (`## Without Ponytail`) and with ponytail (`## With Ponytail`), so you can
 compare side by side. Model: Claude Haiku 4.5, temperature 1, source `benchmarks/output.json`.
 
-These are not hand-written. Reproduce them yourself:
+Those five outputs are not hand-written and predate the revised safeguards. Their line counts do not establish behavioral equivalence, safety, or quality. Notes on each page identify important limits without rewriting the recorded output. Other pages in this directory are illustrative comparisons, not results from this five-task experiment.
+
+To reproduce the historical setup:
 `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`. Method, all three models, and
 median-of-10 numbers: [../benchmarks/](../benchmarks/).
 

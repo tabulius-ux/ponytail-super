@@ -1,5 +1,7 @@
 # Debounce
 
+> Historical benchmark output, preserved verbatim below; not current implementation guidance. A shorter output is not proof of equivalent behavior. Preserve the required timing, receiver, independent instances, cancellation, and error behavior when replacing an existing debounce.
+
 **Task:** "Add debounce to a search input in vanilla JavaScript. It currently fires an API call on every keystroke."
 
 Verbatim model output from a benchmark run, Claude Haiku 4.5, no-skill arm vs ponytail arm, temperature 1, source `benchmarks/output.json`. Reproduce: `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`.

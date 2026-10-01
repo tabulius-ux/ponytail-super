@@ -8,7 +8,7 @@
 <h1 align="center">Ponytail</h1>
 
 <p align="center">
-  <em>No dice nada. Escribe una línea. Funciona.</em>
+  <em>Menos código innecesario. Responsabilidades claras. Comportamiento requerido conservado.</em>
 </p>
 
 <p align="center">
@@ -30,8 +30,8 @@
 </p>
 
 <p align="center">
-  <strong>~54% menos de código (hasta 94%) &middot; ~20% más barato &middot; ~27% más rápido &middot; 100% seguro</strong><br>
-  <sub>Medido en sesiones reales de Claude Code editando un repo open-source real (FastAPI + React), contra el mismo agente sin skill. ~54% es el promedio de 12 tareas de feature (Haiku 4.5, n=4); llega al 94% cuando un agente sobre-construye (un selector de fechas) y es casi cero cuando el código ya es mínimo. ponytail mantiene cada guarda de seguridad, mientras que un prompt simple de "escribe one-liners" se salta una. (El benchmark anterior de un solo disparo reportaba 80-94% como cifra plana; contra un baseline agéntico justo, ese es el techo por tarea, no el promedio.) <a href="benchmarks/results/2026-06-18-agentic.md">Reporte completo</a> &middot; <a href="benchmarks/">reprodúcelo</a>.</sub>
+  <strong>~54% menos de código (hasta 94%) &middot; ~20% más barato &middot; ~27% más rápido &middot; benchmark histórico</strong><br>
+  <sub>Medido en sesiones reales de Claude Code editando un repo open-source real (FastAPI + React), contra el mismo agente sin skill. ~54% es el promedio de 12 tareas de feature (Haiku 4.5, n=4); llega al 94% cuando un agente sobre-construye (un selector de fechas) y es casi cero cuando el código ya es mínimo. En el conjunto adversarial separado, ponytail pasó 20/20 casos y el prompt de "escribe one-liners" pasó 19/20. No es una garantía general de seguridad. (El benchmark anterior de un solo disparo reportaba 80-94% como cifra plana; contra un baseline agéntico justo, ese es el techo por tarea, no el promedio.) <a href="benchmarks/results/2026-06-18-agentic.md">Reporte completo</a> &middot; <a href="benchmarks/">reprodúcelo</a>.</sub>
 </p>
 
 <p align="center">
@@ -44,22 +44,22 @@
   <a href="https://ponytail.dev/soon"><img src="assets/waitlist-banner-es.png" alt="Algo nuevo está por llegar, únete a la lista" width="760"></a>
 </p>
 
-Lo conoces. Cola de caballo larga. Lentes ovalados. Lleva más tiempo en la empresa que el control de versiones. Le muestras cincuenta líneas; las mira, no dice nada, y las reemplaza por una.
+Lo conoces. Cola de caballo larga. Lentes ovalados. Lleva más tiempo en la empresa que el control de versiones. Pregunta qué debe hacer el código y elimina la complejidad que no cumple una función actual.
 
 Ponytail lo pone dentro de tu agente de IA.
 
 ## Antes / después
 
-Le pides un selector de fechas. Tu agente instala flatpickr, escribe un componente wrapper, agrega un stylesheet, y empieza una discusión sobre zonas horarias.
+Necesitas una entrada de fecha básica. Comprueba si el control nativo cubre los requisitos y las plataformas de destino antes de añadir una biblioteca.
 
 Con ponytail:
 
 ```html
-<!-- ponytail: el browser ya tiene uno -->
-<input type="date">
+<label for="date">Fecha</label>
+<input id="date" type="date">
 ```
 
-Más sobrevivientes en [examples/](examples/).
+Usa el control nativo solo si cubre la interacción, el formato y la accesibilidad requeridos. Hay ejemplos acotados y salidas históricas en [examples/](examples/).
 
 ## Números
 
@@ -69,13 +69,13 @@ La medición honesta es un agente real haciendo trabajo real: una sesión headle
   <img src="assets/benchmark-agentic.svg" width="860" alt="Cada variante como porcentaje del baseline sin skill en LOC, tokens, costo y tiempo (Haiku 4.5). ponytail es el más bajo en cada métrica (LOC 46%, tokens 78%, costo 80%, tiempo 73%); caveman sube por encima del 100% en tokens, costo y tiempo; yagni-oneliner LOC 67%. Seguridad, tier adversarial aparte: baseline, caveman y ponytail 100%, yagni-oneliner 95%.">
 </p>
 
-| vs baseline sin skill | LOC | tokens | costo | tiempo | seguro |
+| vs baseline sin skill | LOC | tokens | costo | tiempo | casos adversariales superados |
 |---|--:|--:|--:|--:|--:|
 | **ponytail** | **-54%** | **-22%** | **-20%** | **-27%** | **100%** |
 | caveman (control de prosa concisa) | -20% | +7% | +3% | +2% | 100% |
 | prompt "YAGNI + one-liners" | -33% | -14% | -21% | -30% | 95% |
 
-ponytail es la única variante que recorta cada métrica, y la única que se mantiene totalmente segura al hacerlo. El recorte es mayor donde hay una trampa real de sobre-construcción (selector de fechas de 404 a 23 líneas, selector de color de 287 a 23, porque usa un `<input>` nativo en vez de un componente) y casi cero en código que ya es mínimo. Método completo, tablas por tarea y limitaciones: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
+En este experimento ponytail redujo las cuatro métricas de recursos y pasó el conjunto adversarial separado (20/20). Esto no mide seguridad general, legibilidad, suficiencia de las pruebas, mantenibilidad ni rendimiento a escala. Son resultados históricos anteriores a las reglas revisadas; su efecto no se ha medido con una nueva comparación de modelos. El recorte es mayor donde hay una trampa real de sobre-construcción (selector de fechas de 404 a 23 líneas, selector de color de 287 a 23, porque usa un `<input>` nativo en vez de un componente) y casi cero en código que ya es mínimo. Método completo, tablas por tarea y limitaciones: [benchmarks/results/2026-06-18-agentic.md](benchmarks/results/2026-06-18-agentic.md).
 
 <details>
 <summary><strong>Números anteriores de un solo disparo (generación aislada)</strong></summary>
@@ -90,11 +90,11 @@ Esto mostraba **80-94% menos código**. [#126](https://github.com/DietrichGebert
 
 </details>
 
-**La regla nunca fue "menos tokens."** Es: escribe solo lo que la tarea necesita, y nunca recortes validación, manejo de errores, seguridad ni accesibilidad. El código termina pequeño porque es necesario, no por golf. El menor costo y latencia son un efecto secundario en los modelos que siguen la escalera; un modelo de razonamiento conciso que gasta tokens de pensamiento deliberando los peldaños puede ir al revés (en GPT-5.5 lo hace).
+**El objetivo es código comprensible que cumpla los requisitos y sea fácil de cambiar.** Las cantidades de código, archivos y tokens son secundarias. Conserva comportamiento, pruebas, validación, manejo de errores, seguridad, accesibilidad y rendimiento. Las reglas revisadas eliminan incentivos contradictorios para acortar el código; no demuestran una mejora empírica de calidad. El menor costo y latencia son un efecto secundario en los modelos que siguen la escalera; un modelo de razonamiento conciso que gasta tokens de pensamiento deliberando los peldaños puede ir al revés (en GPT-5.5 lo hace).
 
 ## Cómo funciona
 
-Antes de escribir código, el agente se detiene en el primer peldaño que aguanta:
+El agente elige el primer peldaño que cumple los requisitos relevantes y las prácticas del proyecto:
 
 ```
 1. ¿Necesita existir esto?        → no: omitirlo (YAGNI)
@@ -102,13 +102,16 @@ Antes de escribir código, el agente se detiene en el primer peldaño que aguant
 3. ¿Lo hace la stdlib?            → úsala
 4. ¿Es una feature nativa?        → úsala
 5. ¿Una dependencia ya instalada? → úsala
-6. ¿Cabe en una línea?            → una línea
-7. Solo entonces: el mínimo que funciona
+6. Solo entonces: código claro y convencional para la necesidad restante
 ```
 
 La escalera se recorre *después* de entender el problema, no en su lugar: lee el código que toca el cambio y sigue el flujo real antes de elegir un peldaño. Flojo en la solución, nunca en la lectura.
 
-Flojo, no negligente: la validación en límites de confianza, el manejo de pérdida de datos, la seguridad y la accesibilidad nunca están en riesgo.
+Las mismas protecciones rigen en lite, full y ultra: conserva nombres descriptivos, lógica legible, funciones útiles y límites con una función actual, incluso con una sola implementación. Separar responsabilidades actuales puede justificar dividir un archivo; una necesidad futura imaginaria no justifica capas nuevas.
+
+Usa el framework de pruebas existente. Conserva casos, aserciones, nombres y fallos localizables; elimina pruebas solo por cobertura duplicada demostrada o requisitos modificados. El riesgo determina las comprobaciones, también en cambios de una línea. Conserva consultas por lotes, paginación y límites de concurrencia; evita N+1 y peor complejidad por ahorrar líneas. Verifica contratos y comportamiento antes de reemplazar algo, sin reducir silenciosamente lo solicitado.
+
+Mantén explicaciones necesarias, supuestos, compromisos y comprobaciones pendientes. Las marcas `ponytail:` necesitan un límite concreto y una condición para revisarlo; no justifican incumplir requisitos. Review y audit solo informan, justifican sus propuestas y distinguen candidatos pendientes de cambios respaldados. Ultra cuestiona más el alcance especulativo, sin debilitar estas protecciones.
 
 ## Instalación
 
@@ -289,16 +292,16 @@ El benchmark de correctness lanza Python para las verificaciones de email y CSV;
 ## FAQ
 
 **¿Puedo usarlo junto con [caveman](https://github.com/JuliusBrussee/caveman)?**
-Sí, y deberías. Caveman achica lo que el agente dice; ponytail achica lo que construye. Mitades distintas, sin solapamiento: caveman deja el código intacto byte por byte, ponytail no se mete con la prosa. Charla concisa sobre código mínimo.
+Sí, y deberías. Caveman achica lo que el agente dice; ponytail achica lo que construye. Mitades distintas, sin solapamiento: caveman deja el código intacto byte por byte, ponytail no se mete con la prosa. Conserva razones, supuestos, comprobaciones y limitaciones importantes aunque el estilo sea conciso.
 
 **¿Necesita un archivo de configuración?**
 No. Un opcional `~/.config/ponytail/config.json` o la variable `PONYTAIL_DEFAULT_MODE` pueden fijar el nivel default, pero nada es obligatorio.
 
 **¿Y si realmente necesito la clase de caché de 120 líneas?**
-No la necesitas. Insiste de todas formas y él la va a construir. Despacio. Correctamente. Mirándote.
+Construye lo que justifican los requisitos. Conserva la caducidad, invalidación, errores y contratos necesarios; una caché más corta que los pierde no es un sustituto.
 
 **¿Escala?**
-El código que nunca escribiste escala infinitamente. Cero bugs, cero CVEs, 100% uptime desde siempre.
+Revisa cómo crecen el trabajo y las llamadas externas con los datos. La simplicidad no garantiza escalabilidad ni seguridad; conserva las protecciones necesarias y mide cuando el cambio lo requiera.
 
 **¿Por qué "ponytail"?**
 Ya sabes exactamente por qué.

@@ -1,5 +1,7 @@
 # Rate Limiting
 
+> Historical benchmark output, preserved verbatim below; not current implementation guidance. This historical output is not a production rate-limit design. Verify identity, concurrency, storage growth, multiple workers, and failure behavior for the actual deployment.
+
 **Task:** "Add rate limiting to my FastAPI endpoint so users can't spam it."
 
 Verbatim model output from a benchmark run, Claude Haiku 4.5, no-skill arm vs ponytail arm, temperature 1, source `benchmarks/output.json`. Reproduce: `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`.

@@ -1,5 +1,7 @@
 # Email Validation
 
+> Historical benchmark output, preserved verbatim below; not current implementation guidance. The short regex below is not general email validation: it accepts invalid forms such as spaces. The quoted 99% claim is unsupported by this experiment. Preserve the actual validation contract; checking for @ or sending a confirmation message is not a substitute for required syntax checks.
+
 **Task:** "Write me a Python function that validates email addresses."
 
 Verbatim model output from a benchmark run, Claude Haiku 4.5, no-skill arm vs ponytail arm, temperature 1, source `benchmarks/output.json`. Reproduce: `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`.

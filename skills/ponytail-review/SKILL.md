@@ -1,57 +1,80 @@
 ---
 name: ponytail-review
 description: >
-  Code review focused exclusively on over-engineering. Finds what to delete:
-  reinvented standard library, unneeded dependencies, speculative abstractions,
-  dead flexibility. One line per finding: location, what to cut, what replaces
-  it. Use when the user says "review for over-engineering", "what can we
-  delete", "is this over-engineered", "simplify review", or invokes
-  /ponytail-review. Complements correctness-focused review, this one only
-  hunts complexity.
+  Review diffs for unnecessary complexity: reinvented standard library,
+  needless dependencies, speculative abstractions, and dead flexibility.
+  Explain each proposed simplification and what behavior it must preserve.
+  Use for "review for over-engineering", "what can we delete", "simplify
+  review", or /ponytail-review. Report only; does not apply fixes.
 ---
 
-Review diffs for unnecessary complexity. One line per finding: location, what
-to cut, what replaces it. The diff's best outcome is getting shorter.
+Review diffs for unnecessary complexity. Prefer clearer responsibilities and
+less maintenance burden while preserving requirements, not the shortest diff.
 
-## Format
+## Findings
 
-`L<line>: <tag> <what>. <replacement>.`, or `<file>:L<line>: ...` for
-multi-file diffs.
+For each significant suggestion, give the location, proposed change,
+complexity it removes, why removal is justified or the replacement sufficient,
+behavior to preserve, and supporting evidence or a specific check still needed.
+Keep it concise, but do not force findings into one line.
+
+Use `supported` for evidence-backed changes and `candidate` for proposals
+needing investigation. Uncertainty is not permission to delete. Rank by
+current maintenance benefit, confidence, and risk; line/dependency counts are
+optional supporting detail, not a score. Do not invent precise savings.
 
 Tags:
 
-- `delete:` dead code, unused flexibility, speculative feature. Replacement: nothing.
-- `stdlib:` hand-rolled thing the standard library ships. Name the function.
-- `native:` dependency or code doing what the platform already does. Name the feature.
-- `yagni:` abstraction with one implementation, config nobody sets, layer with one caller.
-- `shrink:` same logic, fewer lines. Show the shorter form.
+- `delete:` demonstrably dead code, unused flexibility, or speculative features.
+- `stdlib:` custom code a suitable standard-library feature can replace.
+- `native:` code or a dependency a suitable platform feature can replace.
+- `yagni:` an abstraction serving only imagined future needs.
+- `simplify:` clearer equivalent logic or separation of existing responsibilities.
+
+## Checks on your suggestions
+
+Check the effects of your own proposals on correctness, security, data
+integrity, accessibility, public contracts, and performance. Trace relevant
+callers, inputs, errors, returns, and side effects; different callers can
+have different contracts. A native feature must cover the required behavior.
+Do not silently reduce requested scope.
+
+Keep descriptive names, clear multiline logic, useful helpers, and comments
+explaining why or an external constraint. Splitting distinct responsibilities
+can help; line counts alone do not justify merging or splitting files. A
+boundary that isolates external I/O, centralizes a business rule, supports
+testing, or reduces coupling can be useful with one implementation or caller.
+Do not demand interfaces or dependency injection without a current need.
+
+Use the existing test framework and practices. Necessary tests and fixtures
+are not over-engineering: preserve behavior cases, meaningful assertions,
+names, and failure localization even when combining or parameterizing tests.
+Removing a test requires evidence of duplicate coverage or a changed
+requirement. Shorter code does not justify fewer tests. Suggest focused
+regression coverage for bug fixes when feasible; even a one-line change may
+need checks, depending on behavior and risk. No artificial test-count cap.
+
+For database, network, collection, concurrency, or large-data changes, inspect
+work and external-call growth. Preserve batching, needed pagination,
+concurrency limits, and other safeguards. Do not replace batch fetches with
+N+1 queries or worsen time complexity for brevity. Bounded-data shortcuts
+need a concrete size assumption. Inspection, a query-count test, or a focused
+measurement can suffice; no blanket benchmark requirement.
+
+A `ponytail:` comment records a concrete ceiling and trigger to revisit a
+valid shortcut; it does not justify breaking a requirement. Keep necessary
+explanations, assumptions, test results, and material verification gaps.
 
 ## Examples
 
-❌ "This EmailValidator class might be more complex than necessary, have you
-considered whether all these validation rules are needed at this stage?"
-
-✅ `L12-38: stdlib: 27-line validator class. "@" in email, 1 line, real validation is the confirmation mail.`
-
-✅ `L4: native: moment.js imported for one format call. Intl.DateTimeFormat, 0 deps.`
-
-✅ `repo.py:L88: yagni: AbstractRepository with one implementation. Inline it until a second one exists.`
-
-✅ `L52-71: delete: retry wrapper around an idempotent local call. Nothing replaces it.`
-
-✅ `L30-44: shrink: manual loop builds dict. dict(zip(keys, values)), 1 line.`
-
-## Scoring
-
-End with the only metric that matters: `net: -<N> lines possible.`
-
-If there is nothing to cut, say `Lean already. Ship.` and stop.
+- `supported · format.js:L4 · native:` Replace the format-only date dependency with the platform formatter. Removes dependency upkeep; callers use only the locale and timezone options covered by it. Preserve those options and error behavior; existing output tests cover the supported locales.
+- `candidate · repo.py:L88 · yagni:` A repository interface has one implementation. Check whether it isolates external I/O or supports test substitution before proposing removal; implementation count alone is not evidence.
+- `candidate · pairs.py:L30 · simplify:` A dict construction may use a built-in. Verify length-mismatch, duplicate-key, and invalid-input handling before replacement; a shorter expression alone is insufficient.
 
 ## Boundaries
 
-Scope: over-engineering and complexity only. Correctness bugs, security holes,
-and performance are explicitly out of scope. Route them to a normal review
-pass, not this one. A single smoke test or `assert`-based
-self-check is the ponytail minimum, not bloat, never flag it for deletion.
-Does not apply the fixes, only lists them.
-"stop ponytail-review" or "normal mode": revert to verbose review style.
+Report only; do not apply fixes. This remains a complexity review, not a
+comprehensive general audit, but the consequences of its own suggestions are
+in scope. No justified changes: say "No supported simplifications found" and
+report any material candidates or unchecked areas; do not imply general
+correctness or safety approval. "stop ponytail-review" / "normal mode": revert.

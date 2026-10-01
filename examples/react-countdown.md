@@ -1,5 +1,7 @@
 # Countdown Timer
 
+> Historical benchmark output, preserved verbatim below; not current implementation guidance. The recorded size difference does not show equivalence for prop changes, lifecycle cleanup, timing accuracy, or accessibility. Preserve the required behavior.
+
 **Task:** "Build me a countdown timer component in React that counts down from a given number of seconds."
 
 Verbatim model output from a benchmark run, Claude Haiku 4.5, no-skill arm vs ponytail arm, temperature 1, source `benchmarks/output.json`. Reproduce: `npx promptfoo@latest eval -c benchmarks/promptfooconfig.yaml`.

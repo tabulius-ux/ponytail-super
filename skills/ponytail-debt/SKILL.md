@@ -8,7 +8,7 @@ description: >
   ledger", or "what did we mark to do later". One-shot report, changes nothing.
 ---
 
-Every deliberate ponytail shortcut is marked with a `ponytail:` comment naming
+Deliberate ponytail shortcuts should be marked with a `ponytail:` comment naming
 its ceiling and upgrade path. This collects them into one ledger so a deferral
 can't quietly become permanent.
 
@@ -35,7 +35,12 @@ and the trigger straight from the comment. Want an owner per row too? add
 Flag the rot risk: any `ponytail:` comment that names no upgrade path or
 trigger gets a `no-trigger` tag, those are the ones that silently rot.
 
-End with `<N> markers, <M> with no trigger.` Nothing found: `No ponytail: debt. Clean ledger.`
+End with `<N> markers, <M> with no trigger.` Nothing found: `No ponytail: markers found; unmarked debt was not assessed.`
+
+A marker needs a concrete limit or assumption and a condition for revisiting it.
+Flag a missing concrete limit as `no-ceiling` too. A comment cannot justify
+violating requirements. This ledger inventories markers, not all debt; missing
+markers do not prove that there is no debt.
 
 ## Boundaries
 

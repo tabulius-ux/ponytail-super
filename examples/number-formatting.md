@@ -20,12 +20,12 @@ numeral(1500).format("0.0a");            // "1.5k"
 ## With Ponytail
 
 ```js
-// ponytail: Intl.NumberFormat does this, locale-aware
+// Use explicit options for the required locale and precision.
 new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" })
   .format(1234567.89);
 // → "$1,234,567.89"
 
-new Intl.NumberFormat("en-US", { style: "percent" })
+new Intl.NumberFormat("en-US", { style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 })
   .format(0.745);
 // → "74.5%"
 
@@ -34,4 +34,4 @@ new Intl.NumberFormat("en-US", { notation: "compact" })
 // → "1.5K"
 ```
 
-**1 dependency → 0 dependencies.** `Intl.NumberFormat` is built into every JS runtime, handles every locale correctly, and gets currency symbols, decimal separators, and grouping right for any market without a lookup table. A library that hardcodes formats will always be wrong for someone.
+A native formatter can cover locale-aware presentation. Preserve the required rounding and precision, and verify target-runtime locale data. The compact examples differ in case (`k` vs `K`); do not change exact output contracts silently. Formatting does not replace precise money arithmetic.

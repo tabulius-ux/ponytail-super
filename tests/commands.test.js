@@ -37,3 +37,26 @@ test('every registered command ships an OpenCode .opencode/command/*.md', () => 
     );
   }
 });
+
+for (const name of commands) {
+  test(`${name} command copies preserve the full applicable instruction body`, () => {
+    const markdown = fs.readFileSync(path.join(root, '.opencode', 'command', `${name}.md`), 'utf8')
+      .replace(/^---\n[\s\S]*?\n---\n*/, '').trim();
+    const toml = fs.readFileSync(path.join(root, 'commands', `${name}.toml`), 'utf8');
+    // These adapters use a TOML basic string with JSON-compatible escaping.
+    const prompt = JSON.parse(toml.match(/^prompt = (".*")$/m)[1]);
+    if (name === 'ponytail') {
+      const compact = fs.readFileSync(path.join(root, 'AGENTS.md'), 'utf8')
+        .replace(/\n\n\(Yes, this file also applies[\s\S]*?\)\s*$/, '').trim();
+      assert.match(markdown, /\$ARGUMENTS/);
+      assert.match(prompt, /\{\{args\}\}/);
+      assert.equal(markdown.replace('$ARGUMENTS', '{{args}}'), prompt);
+      assert.equal(prompt.slice(prompt.indexOf('# Ponytail')), compact);
+    } else {
+      const body = fs.readFileSync(path.join(root, 'skills', name, 'SKILL.md'), 'utf8')
+        .replace(/^---\n[\s\S]*?\n---\n*/, '').trim();
+      assert.equal(markdown, body, 'OpenCode command drifted from skill');
+      assert.equal(prompt, body, 'TOML command drifted from skill');
+    }
+  });
+}

@@ -14,10 +14,11 @@ write flag files, or persist anything.
 
 | Level | Trigger | What change |
 |-------|---------|-------------|
-| **Lite** | `/ponytail lite` | Build what's asked, name the lazier alternative in one line. |
-| **Full** | `/ponytail` | The ladder enforced: YAGNI → stdlib → native → one line → minimum. Default. |
-| **Ultra** | `/ponytail ultra` | YAGNI extremist. Deletion before addition. Challenges requirements before building. |
+| **Lite** | `/ponytail lite` | Build what's asked; suggest suitable simpler alternatives. |
+| **Full** | `/ponytail` | YAGNI → existing code → suitable stdlib/native/dependency → clear implementation. Default. |
+| **Ultra** | `/ponytail ultra` | Challenge speculative scope more strongly; preserve requested behavior. |
 
+All active levels preserve requirements, readability, tests, and performance.
 Level sticks until changed or session end.
 
 ## Skills
@@ -25,8 +26,8 @@ Level sticks until changed or session end.
 | Skill | Trigger | What it does |
 |-------|---------|--------------|
 | **ponytail** | `/ponytail` | Lazy mode itself. Simplest solution that works. |
-| **ponytail-review** | `/ponytail-review` | Over-engineering review: `L42: yagni: factory, one product. Inline.` |
-| **ponytail-audit** | `/ponytail-audit` | Whole-repo over-engineering audit: ranked list of what to delete. |
+| **ponytail-review** | `/ponytail-review` | Complexity review: justified simplifications, preservation requirements, and evidence. |
+| **ponytail-audit** | `/ponytail-audit` | Repo-wide complexity audit: supported findings and candidates; report only. |
 | **ponytail-debt** | `/ponytail-debt` | Harvest `ponytail:` shortcut comments into a tracked ledger. |
 | **ponytail-gain** | `/ponytail-gain` | Measured-impact scoreboard: less code, less cost, more speed. |
 | **ponytail-help** | `/ponytail-help` | This card. |
