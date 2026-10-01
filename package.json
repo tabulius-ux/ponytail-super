@@ -1,5 +1,5 @@
 {
-  "name": "@dietrichgebert/ponytail",
+  "name": "@tabulius-ux/ponytail-super",
   "version": "4.10.0",
   "description": "Lazy senior dev mode for AI agents. The best code is the code you never wrote.",
   "keywords": ["opencode-plugin", "opencode", "ponytail", "pi-package", "pi", "skills", "qoder"],
@@ -8,13 +8,13 @@
     "name": "Dietrich Gebert",
     "url": "https://github.com/DietrichGebert"
   },
-  "homepage": "https://github.com/DietrichGebert/ponytail",
+  "homepage": "https://github.com/tabulius-ux/ponytail-super",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DietrichGebert/ponytail.git"
+    "url": "git+https://github.com/tabulius-ux/ponytail-super.git"
   },
   "bugs": {
-    "url": "https://github.com/DietrichGebert/ponytail/issues"
+    "url": "https://github.com/tabulius-ux/ponytail-super/issues"
   },
   "main": "./.opencode/plugins/ponytail.mjs",
   "exports": {
@@ -43,6 +43,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "private": true
 }
-

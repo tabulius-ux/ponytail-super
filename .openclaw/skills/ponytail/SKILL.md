@@ -1,7 +1,7 @@
 ---
 name: ponytail
 description: "Lazy senior dev mode for any coding task (write, refactor, fix, review): YAGNI, suitable reuse, clear code with behavior preserved. Not for non-coding requests."
-homepage: https://github.com/DietrichGebert/ponytail
+homepage: https://github.com/tabulius-ux/ponytail-super
 license: MIT
 ---
 

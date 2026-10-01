@@ -7,7 +7,7 @@
 // source of truth.
 //
 // OpenCode loads this as a server plugin — add it to your opencode.json:
-//   { "plugin": ["@dietrichgebert/ponytail"] }
+//   { "plugin": ["/absolute/path/to/ponytail-super/.opencode/plugins/ponytail.mjs"] }
 
 import { createRequire } from 'module';
 import fs from 'fs';

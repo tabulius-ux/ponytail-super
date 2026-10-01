@@ -1,10 +1,10 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "ponytail",
+  "name": "ponytail-super",
   "description": "Lazy senior dev mode for AI agents. The best code is the code you never wrote.",
   "owner": {
-    "name": "Dietrich Gebert",
-    "url": "https://github.com/DietrichGebert"
+    "name": "tabulius-ux",
+    "url": "https://github.com/tabulius-ux"
   },
   "plugins": [
     {

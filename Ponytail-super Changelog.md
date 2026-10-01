@@ -275,3 +275,67 @@ Luettelo sisältää 70 tiedostoa raportti mukaan lukien.
 - `tests/cursor-hooks.test.js`
 - `tests/hermes-plugin.test.js`
 - `tests/instructions.test.js`
+
+
+## Asennuslähteiden tarkistus ja korjaus (1.10.2026)
+
+Jatkotarkistus löysi toimitusreiteistä upstream-viittauksia, joita yllä kuvattu
+sisältöjen päivitys ei ollut korjannut. Erityisesti Codexin
+`.agents/plugins/marketplace.json` haki pluginin suoraan
+`DietrichGebert/ponytail.git`-reposta. Siksi pelkkä forkin marketplace-osoitteen
+antaminen ei vielä varmistanut mukautettujen skillien asennusta.
+
+Korjaukset:
+
+- Codexin Git-lähde on nyt `https://github.com/tabulius-ux/ponytail-super.git`,
+  haara `main`. Claude-, Copilot- ja Grok-marketplacejen `source: "./"` käyttää
+  kyseisen checkoutin juurta. Kaikkien neljän marketplacen nimi on
+  `ponytail-super`, jotta ne erottuvat upstreamin `ponytail`-marketplacesta.
+  Pluginin ja skillien nimet säilyvät; asennustunniste on
+  `ponytail@ponytail-super`.
+- Kolmen README-tiedoston Git-asennuskomennot, agenttien repository/homepage-
+  metatiedot sekä Cursor- ja portability-ohjeet osoittavat forkkiin.
+- OpenCode-ohje käyttää paikallista pluginpolkua upstreamin npm-paketin sijaan.
+  npm-paketin nimeksi vaihdettiin `@tabulius-ux/ponytail-super` ja se merkittiin
+  yksityiseksi (`private: true`); julkaistua fork-pakettia ei väitetä olevan.
+- OpenClaw-ohje kopioi kaikki kuusi generoitua skilliä tästä checkoutista.
+  Upstreamin ClawHub-paketteja ei enää anneta forkin asennuskomentoina.
+  ClawHub-julkaisuskripti kieltäytyy julkaisemasta yksityistä pakettia, jotta
+  upstreamin slugeja ei käytetä vahingossa. Mitään ei julkaistu.
+- Help-skillin päivitys valitsee `ponytail-super`-marketplacen. Sen TOML-,
+  OpenCode- ja OpenClaw-kopiot päivitettiin. OpenClaw-generointi käyttää
+  forkin homepage-osoitetta.
+
+Runtime-polkujen tarkastus kattoi hookit, yhteisen JavaScript-ohjeenmuodostajan,
+Hermesin Python-toteutuksen, Pi:n, OpenCoden ja MCP:n. Ne lukevat mukana
+toimitettuja paikallisia skillejä tai paikallisia varatekstejä; niistä ei
+löytynyt upstreamista ohjeita lataavaa käyttö- tai päivitysmekanismia.
+Git-seurannassa ei ollut symbolisia linkkejä, jotka ohjaisivat tiedostoihin
+repon ulkopuolella. Alkuperäisen tekijän lisenssi- ja tekijämerkinnät,
+rahoituslinkki sekä historiallisten kokeiden ja issueiden viitteet ovat
+attribuutiota eivätkä asennuslähteitä.
+
+Uusi `tests/install-provenance.test.js` tarkistaa Git-lähteen ja marketplacejen
+paikalliset lähteet, README-asennuskomennot, päivitysmarketplacen, npm-paketin
+identiteetin, kuuden skillin kopioinnin ja asennetun ohjeenmuodostajan oman
+skill-polun sekä ClawHub-julkaisun eston. Väliaikaisen kopion ydinskilliin
+lisätty merkki näkyy vain sen oman ohjeenmuodostajan tulosteessa; tämä osoittaa,
+että asennuskopio todella lukee omia tiedostojaan.
+
+Tarkistuksen rajat: oikeita Codex-, Claude- tai muiden hostien asennuksia ei
+tehty eikä niiden olemassa olevia välimuisteja muutettu. Etäasennus käyttää
+vain forkkiin commitattuja ja pushattuja tiedostoja. Paikalliset muutokset
+vaativat checkoutista asentamisen tai commitin ja pushin ennen etäasennusta.
+Vanhasta upstream-asennuksesta on siirryttävä forkkiin erikseen; molempia ei
+pidä pitää aktiivisina samanaikaisesti, koska komentojen nimet ja tilatiedostot
+ovat yhteisiä. Sama peritty versionumero `4.10.0` ei yksin todista alkuperää.
+Tarkemmat toimitus- ja päivitysohjeet: [agent-portability.md](docs/agent-portability.md#installation-provenance).
+
+Kohdennettu testiajo läpäisi 132 testiä (0 epäonnistunutta, 0 ohitettua).
+Mukana olivat asennuslähteet, komentokopiot, OpenClaw-generointi, ohjeiden
+sisältösopimukset, paketin toimitustiedostot, Claude/Codex-hookit sekä
+Copilot-, Grok-, Qoder-, Gemini-, Hermes- ja OpenCode-adapterit.
+`check-rule-copies.js`, `check-versions.js` ja `git diff --check` läpäisivät.
+Node-testit ajettiin sandboxin ulkopuolella sen aliprosessirajoituksen vuoksi;
+tätä varten ei muutettu tuotantokoodia. Koko benchmark-testiketjua ei ajettu,
+koska tämän tarkistuksen muutokset koskevat asennuslähteitä ja ohjeiden toimitusta.

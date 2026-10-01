@@ -23,7 +23,12 @@ const { spawnSync } = require('child_process');
 const root = path.join(__dirname, '..');
 const skillsDir = path.join(root, '.openclaw', 'skills');
 
-const version = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')).version;
+const packageJson = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
+if (packageJson.private) {
+  console.error('Registry publishing is disabled for this fork. Install from the checkout; a registry release needs separate skill slugs.');
+  process.exit(1);
+}
+const version = packageJson.version;
 
 // Every generated skill dir with a SKILL.md is publishable. Reading the dir
 // (instead of a hardcoded list) covers whatever build-openclaw-skills emits,

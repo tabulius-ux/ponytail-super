@@ -1,3 +1,5 @@
+> **Ponytail-super fork:** Install from `tabulius-ux/ponytail-super` to get the customized rules in [Ponytail-super Changelog.md](Ponytail-super%20Changelog.md). The upstream `DietrichGebert/ponytail`, npm package `@dietrichgebert/ponytail`, and ClawHub packages contain the upstream version. This fork uses marketplace name `ponytail-super` and plugin name `ponytail`. Disable or uninstall any upstream Ponytail plugin before enabling this fork. Remote installs include only committed and pushed changes; use a local checkout for unpublished edits. See [installation provenance](docs/agent-portability.md#installation-provenance).
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.png">
@@ -16,9 +18,8 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/github/stars/DietrichGebert/ponytail?style=flat-square&color=111111&label=stars" alt="Stars">
-  <img src="https://img.shields.io/github/v/release/DietrichGebert/ponytail?style=flat-square&color=111111&label=release" alt="Release">
-  <img src="https://img.shields.io/npm/v/@dietrichgebert/ponytail?style=flat-square&color=111111&label=npm" alt="npm">
+  <img src="https://img.shields.io/github/stars/tabulius-ux/ponytail-super?style=flat-square&color=111111&label=stars" alt="Stars">
+  <img src="https://img.shields.io/github/v/release/tabulius-ux/ponytail-super?style=flat-square&color=111111&label=release" alt="Release">
   <img src="https://img.shields.io/badge/funciona%20con-15%20agentes-111111?style=flat-square" alt="Works with 15 agents">
   <img src="https://img.shields.io/badge/licencia-MIT-111111?style=flat-square" alt="MIT license">
 </p>
@@ -122,8 +123,8 @@ Los plugins de Claude Code y Codex ejecutan dos pequeños lifecycle hooks de Nod
 ### Claude Code
 
 ```
-/plugin marketplace add DietrichGebert/ponytail
-/plugin install ponytail@ponytail
+/plugin marketplace add tabulius-ux/ponytail-super
+/plugin install ponytail@ponytail-super
 ```
 
 La app de escritorio no tiene el comando `/plugin`. Instálala desde la interfaz: Customize, el + junto a los plugins personales, Create plugin and add marketplace, Add from repository, y luego ingresa la URL del repo (gracias @NiklasDHahn, #98).
@@ -131,7 +132,7 @@ La app de escritorio no tiene el comando `/plugin`. Instálala desde la interfaz
 ### Codex
 
 ```bash
-codex plugin marketplace add DietrichGebert/ponytail
+codex plugin marketplace add tabulius-ux/ponytail-super
 codex
 ```
 
@@ -142,15 +143,15 @@ Esta misma instalación cubre también la app de escritorio de Codex: reinicia l
 ### GitHub Copilot CLI
 
 ```bash
-copilot plugin marketplace add DietrichGebert/ponytail
-copilot plugin install ponytail@ponytail
+copilot plugin marketplace add tabulius-ux/ponytail-super
+copilot plugin install ponytail@ponytail-super
 ```
 
 En una sesión interactiva de Copilot CLI, usa los equivalentes con slash:
 
 ```
-/plugin marketplace add DietrichGebert/ponytail
-/plugin install ponytail@ponytail
+/plugin marketplace add tabulius-ux/ponytail-super
+/plugin install ponytail@ponytail-super
 ```
 
 Copilot CLI agrupa los comandos del plugin bajo el nombre del plugin. Por ejemplo:
@@ -163,7 +164,7 @@ Copilot CLI agrupa los comandos del plugin bajo el nombre del plugin. Por ejempl
 ### Pi agent harness
 
 ```
-pi install git:github.com/DietrichGebert/ponytail
+pi install git:github.com/tabulius-ux/ponytail-super
 ```
 
 ### OpenCode
@@ -171,7 +172,7 @@ pi install git:github.com/DietrichGebert/ponytail
 Agrega esto a `opencode.json`:
 
 ```json
-{ "plugin": ["@dietrichgebert/ponytail"] }
+{ "plugin": ["/absolute/path/to/ponytail-super/.opencode/plugins/ponytail.mjs"] }
 ```
 
 O ejecútalo desde un checkout (el plugin reutiliza sus `hooks/` y `skills/`):
@@ -187,7 +188,7 @@ El path `./` se resuelve contra el `opencode.json` de tu proyecto; para comparti
 ### Gemini CLI
 
 ```bash
-gemini extensions install https://github.com/DietrichGebert/ponytail
+gemini extensions install https://github.com/tabulius-ux/ponytail-super
 ```
 
 Carga el ruleset como contexto permanente en cada sesión y registra los comandos `/ponytail`; los `skills/` también se incluyen, activados cuando una tarea los necesita.
@@ -197,7 +198,7 @@ Carga el ruleset como contexto permanente en cada sesión y registra los comando
 Google está renombrando Gemini CLI a Antigravity CLI (el binario `agy`); la misma extensión se instala ahí:
 
 ```bash
-agy plugin install https://github.com/DietrichGebert/ponytail
+agy plugin install https://github.com/tabulius-ux/ponytail-super
 ```
 
 Reutiliza el `gemini-extension.json` de este repo. Una diferencia: Antigravity convierte los comandos `/ponytail` en skills, así que los escribes en el chat (por ejemplo `/ponytail-review` como mensaje) en vez de seleccionarlos de un menú slash. Hasta que la migración se complete (alrededor del 18 de junio de 2026), `gemini extensions install` también funciona. Para usarlo como regla permanente, coloca el ruleset en `.agents/rules/`.
@@ -209,23 +210,28 @@ Lee `AGENTS.md` desde la raíz del proyecto, sin configuración. Copia [`AGENTS.
 ### Devin CLI
 
 ```bash
-devin plugins install DietrichGebert/ponytail
+devin plugins install tabulius-ux/ponytail-super
 ```
 
 Instala ponytail como plugin de Devin; los skills quedan disponibles como `/ponytail:ponytail`, `/ponytail:ponytail-review`, etc.
 
 ### OpenClaw
 
+Install the generated skills from this fork's checkout:
+
 ```bash
-clawhub install ponytail
+mkdir -p ~/.openclaw/skills
+cp -R /absolute/path/to/ponytail-super/.openclaw/skills/ponytail* ~/.openclaw/skills/
 ```
 
-Instala ponytail como skill de OpenClaw desde ClawHub; los skills de review, audit, debt y help se instalan igual (`clawhub install ponytail-review`, etc.). OpenClaw lo aplica en tareas de código y también lo expone como comando `/ponytail`. Sin ClawHub, copia [`.openclaw/skills/ponytail`](.openclaw/skills/) a `~/.openclaw/skills/`.
+This copies all six customized skills. ClawHub's upstream packages do not
+contain this fork's changes. Repeat the copy after updating the checkout.
+
 
 ### Grok Build
 
 ```bash
-grok plugin install DietrichGebert/ponytail --trust
+grok plugin install tabulius-ux/ponytail-super --trust
 ```
 
 Habilita el plugin (está desactivado por defecto): `/plugins` → Plugins → Space en `ponytail`, o en `~/.grok/config.toml`:
@@ -242,7 +248,7 @@ Abre una sesión nueva (o recarga los plugins). Los skills aparecen como `/ponyt
 ### Cursor
 
 ```bash
-git clone https://github.com/DietrichGebert/ponytail
+git clone https://github.com/tabulius-ux/ponytail-super ponytail
 node ponytail/scripts/cursor-hooks.js install
 ```
 

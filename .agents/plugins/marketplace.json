@@ -1,14 +1,14 @@
 {
-  "name": "ponytail",
+  "name": "ponytail-super",
   "interface": {
-    "displayName": "Ponytail"
+    "displayName": "Ponytail Super"
   },
   "plugins": [
     {
       "name": "ponytail",
       "source": {
         "source": "url",
-        "url": "https://github.com/DietrichGebert/ponytail.git",
+        "url": "https://github.com/tabulius-ux/ponytail-super.git",
         "ref": "main"
       },
       "policy": {

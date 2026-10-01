@@ -1,7 +1,7 @@
 ---
 name: ponytail-help
 description: "Quick reference for ponytail's modes, skills, and commands. One-shot display."
-homepage: https://github.com/DietrichGebert/ponytail
+homepage: https://github.com/tabulius-ux/ponytail-super
 license: MIT
 ---
 
@@ -62,10 +62,15 @@ Resolution: env var > config file > `full`.
 
 ## Update
 
-Enable auto-update once: open `/plugin`, go to Marketplaces, pick ponytail, Enable auto-update. Claude Code then pulls new versions at startup (run `/reload-plugins` when it prompts). Manual refresh: `/plugin marketplace update ponytail` then `/reload-plugins`.
+This is the customized Ponytail-super fork. Use the `ponytail-super` marketplace
+from `tabulius-ux/ponytail-super`; the upstream marketplace and npm/ClawHub
+packages do not contain these changes. Disable or uninstall the upstream
+Ponytail plugin before enabling this fork to avoid duplicate instructions.
+
+Enable auto-update once: open `/plugin`, go to Marketplaces, pick ponytail-super, Enable auto-update. Claude Code then pulls new versions at startup (run `/reload-plugins` when it prompts). Manual refresh: `/plugin marketplace update ponytail-super` then `/reload-plugins`.
 
 If `/plugin` is not recognized, your Claude Code is out of date. Update it (`npm install -g @anthropic-ai/claude-code@latest`, or `brew upgrade claude-code`) and restart. Other hosts use their own update flow.
 
 ## More
 
-Full docs + examples: https://github.com/DietrichGebert/ponytail
+Full docs + examples: https://github.com/tabulius-ux/ponytail-super
